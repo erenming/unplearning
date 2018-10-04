@@ -4,7 +4,11 @@
 3. MSS: maximum segment size, 最大分节大小
 4. POSIX: 
     - Portable Operating System Interface,是由IEEE开发的一系列标准，是涵盖了大量c语言编程接口的规范
-
+5. 分节:
+    - SYN: 同步分节，1 byte, 同一连接中发送的数据的初始序列号
+    - FIN: 结束分节，1 byte, 结束分节
+    - ACK: 确认分节，是发送端所期待的下一个序列号
+    - RST: 复位分节，服务器在我们指定的端口上无进程在等待连接，TCP想取消一个已有连接
 ---
 
 ## 笔记
