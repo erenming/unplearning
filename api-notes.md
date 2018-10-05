@@ -66,6 +66,7 @@ cliaddr: 客户的套接字地址
 addrlen: value: cliaddr所指的套接字地址结构的长度， result: 内核存放该套接字地址结构的确切字节数
 -> return: 非负描述符 or -1
 */
+int accept(int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen);
 ```
 - fork: 派生新的进程， 一次调用两次返回
     1. 父进程中返回子进程的ID号
