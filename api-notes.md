@@ -15,7 +15,7 @@ struct sockaddr_in {
 };
 ```
 - inet_pton: 点分str -> 32bit
-- inet_ntop: 32bit  -> 电分str
+- inet_ntop: 32bit  -> 点分str
 - readn, writen readline: 循环读取字节流、循环写入字节流
 - socket:
 ```c
@@ -52,10 +52,38 @@ int bind(int sockfd, const struct sockaddr *myaddr, socklen_t addrlen);
 - listen: 
 ```c
 /*
-sockfd: socket descriptor, 未连接sockfd -> 被动sockfd
+sockfd: socket descriptor, 未连接sockfd -> 被动sockfd(指示内核应该接收指向该套接字的连接请求)
 backlog: 略大于 未完成连接队列(等待完成三路握手) + 已完成队列(已完成三路握手，等待accpet调用)
 -> return: 0 or -1
 */
 int listen(int sockfd, int backlog);
 ```
-- accept
+- accept: TCP服务器调用，从已完成连接队列头返回下一个已完成连接
+```c
+/*
+sockfd: 监听套接字描述符
+cliaddr: 客户的套接字地址
+addrlen: value: cliaddr所指的套接字地址结构的长度， result: 内核存放该套接字地址结构的确切字节数
+-> return: 非负描述符 or -1
+*/
+```
+- fork: 派生新的进程， 一次调用两次返回
+    1. 父进程中返回子进程的ID号
+    2. 子进程中返回0, 可通过getppid回去父进程ID
+    3. 两种典型用法:
+        - 并发，创建副本，每个副本与其他副本同时处理各自的某个操作
+        - 进程执行另一个程序，创建副本后，调用exec系列函数将当前进程替换成新的程序
+```c
+pid_t fork(void);
+```
+- exec: 让存放在硬盘上的可执行程序文件被Unix执行
+- close: 把套接字标记为已关闭，描述符引用计数减一。而TCP会尝试发送已排队的等待发送到对端的任何数据，然后才是正常的TCP的FIN分节
+- getsockname: 获取与某个套接字关联的本地协议地址
+```c
+int getsockname(int sockfd, struct sockaddr *localaddr, socklen_t *addrlen);
+```
+- getpeername: 获取与某个套接字关联的外地(客户)协议地址
+```c
+int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);
+```
+
