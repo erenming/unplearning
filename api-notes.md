@@ -87,4 +87,13 @@ int getsockname(int sockfd, struct sockaddr *localaddr, socklen_t *addrlen);
 ```c
 int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);
 ```
-
+- wait, waitpid: 处理已终止的子进程
+```c
+/*
+pid: 要等待的进程ID, -1代表等待第一个终止的子进程
+statloc: 子进程的终止状态的指针
+options: 附加选项，WNOHANG用以告知内核没有已终止子进程时不要阻塞
+*/
+pid_t wait(int *statloc);
+pid_t waitpid(pid_t pid, int *statloc, int options);
+```
