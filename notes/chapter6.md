@@ -9,36 +9,36 @@
 ![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-140649@2x.png)
 
 - 非阻塞式I/O模型:
-
-![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-142205@2x.png)
-
     1. When an application sits in a loop calling recvfrom on a nonblocking descriptor like this, it is called polling
     2. The application is continually polling the kernel to see if some operation is ready
 
+![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-142205@2x.png)
+
 - I/O复用模型：
+    1. we call select or poll and block in one of these two system calls, instead of blocking in the actual I/O system call
 
 ![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-142824@2x.png)
-    1.we call select or poll and block in one of these two system calls, instead of blocking in the actual I/O system call
+
 
 - 信号驱动式I/O模型：
+    1. We can also use signals, telling the kernel to notify us with the SIGIO signal when the descriptor is ready
 
 ![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-143455@2x.png)
 
-    1. We can also use signals, telling the kernel to notify us with the SIGIO signal when the descriptor is ready
-
 - 异步I/O模型：
+    1. In general, these functions work by telling the kernel to start the operation and to notify us when the entire operation (including the copy of the data from the kernel to our buffer) is complete
 
 ![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-144754@2x.png)
 
-    1. In general, these functions work by telling the kernel to start the operation and to notify us when the entire operation (including the copy of the data from the kernel to our buffer) is complete
 
 - 模型比较:
-
-![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-145153@2x.png)
 
     1. 同步I/O操作(synchronous I/O operation): causes the requesting process to be blocked until that I/O operation completes
     2. 异步I/O操作(asynchronous I/O operation): does not cause the requesting process to be blocked.
     3. 前四种均为同步I/O模型，只有异步I/O模型才是异步I/O模型
+
+![](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181220-145153@2x.png)
+
 ---
 
 - select: 允许进程指示内核等待多个事件中的一个发生，并且只有在一个或多个事件发生或经历了一段指定的时间后才唤醒该进程
