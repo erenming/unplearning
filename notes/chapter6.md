@@ -43,14 +43,14 @@
 
 - select: 允许进程指示内核等待多个事件中的一个发生，并且只有在一个或多个事件发生或经历了一段指定的时间后才唤醒该进程
 
-```c
-#include <sys/select.h>
-#include <sys/time.h>
+    ```c
+    #include <sys/select.h>
+    #include <sys/time.h>
 
-int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout);
+    int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout);
 
-Returns: positive count of ready descriptors, 0 on timeout, –1 on error
-```
+    Returns: positive count of ready descriptors, 0 on timeout, –1 on error
+    ```
 
     1. 参数说明
         -  `timeval`: tells the kernel how long to wait for one of the specified descriptors to become ready
@@ -59,3 +59,38 @@ Returns: positive count of ready descriptors, 0 on timeout, –1 on error
             3. Do not wait at all: set to 0
         - `readset`, `writeset`, and `exceptset`, specify the descriptors that we want the kernel to test for reading, writing, and exception conditions.
         - fd_set 结构: 描述符集，通常为一个整数数组，其中每个整数中的每一位对应一个描述符。例如32位整数，第一个元素对应于描述符0~31
+            ```c
+            fd_set rset;
+            FD_ZERO(&rset);   /* initialize the set: all bits off */
+            FD_SET(1, &rset); /* turn on bit for fd 1 */
+            FD_SET(4, &rset); /* turn on bit for fd 4 */
+            FD_SET(5, &rset); /* turn on bit for fd 5 */
+            ```
+    2. 描述符就绪条件
+        - A socket is ready for reading：
+            1. The number of bytes of data in the socket receive buffer is greater than or equal to the current size of the low-water mark for the socket receive buffer.
+            2. The read half of the connection is closed(i.e.,a TCP connection that has received a FIN).
+            3. The socket is a listening socket and the number of completed connections is nonzero.
+            4. A socket error is pending
+        - A socket is ready for writing：
+            1. The number of bytes of available space in the socket send buffer is greater than or equal to the current size of the low-water mark for the socket send buffer and either: (i) the socket is connected, or (ii) the socket does not require a connection (e.g., UDP).
+            2. The write half of the connection is closed.
+            3. A socket using a non-blocking connect has completed the connection, or the connect has failed.
+            4. A socket error is pending.
+        - 接受和发送低水位标记的目的： give the application control over how much data must be available for reading or how much space must be available for writing before select returns a readable or writable status
+        - 总结：
+            ![1](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181221-103415@2x.png)
+
+- shutdown: 在应用中，发送给对端一个FIN，告诉它我们已经完成了数据发送，但是仍然保持套接字描述符打开以便读取
+    ```c
+    #include <sys/socket.h>
+    int shutdown(int sockfd, int howto);
+
+    Returns: 0 if OK, –1 on error
+    ```
+    1. TCP Half-Close: TCP provides the ability for one end of a connection to terminate its output, while still receiving data from the other end. This is called a half-close.
+    2. 参数说明：
+        - howto:
+            1. SHUT_RD: The read half of the connection is closed
+            2. SHUT_WR: The write half of the connection is closed
+            3. SHUT_RDWR: The read half and the write half of the connection are both closed, This is equivalent to calling shutdown twice
