@@ -94,3 +94,29 @@
             1. SHUT_RD: The read half of the connection is closed
             2. SHUT_WR: The write half of the connection is closed
             3. SHUT_RDWR: The read half and the write half of the connection are both closed, This is equivalent to calling shutdown twice
+
+- 拒绝服务型攻击：当一个服务器在处理多个客户时，绝对不能阻塞于只于单个客户相关的某个函数调用。否则可能导致服务器被挂起，
+                拒绝为所有其他客户提供服务。
+
+- poll函数：功能类似select
+    ```c
+    #include <poll.h>
+    int poll (struct pollfd *fdarray, unsigned long nfds, int timeout);
+    // Returns: count of ready descriptors, 0 on timeout, –1 on error
+    ```
+    1. 参数说明：
+        - fdarray: 指向一个结构数组第一个元素的指针
+            ```c
+            struct pollfd {
+                int fd; /* descriptor to check */
+                short events; /* events of interest on fd */
+                short revents; /* events that occurred on fd */
+            };
+            ```
+    2. 就TCP/UDP而言，触发poll返回特定的revent
+        - 所有正规TCP数据和所有UDP数据都被认为是普通数据
+        - TCP带外数据被认为是优先级数据
+        - TCP读半部关闭时，普通数据
+        - TCP连接存在错误认为普通数据或错误
+        - 监听套接字上有新的连接通常为普通数据
+        - 非阻塞式connect的完成被认为是使相应套接字可写
