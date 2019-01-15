@@ -10,11 +10,35 @@
     - 关系图：
         ![xx](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20190114-231029@2x.png)
 4. DNS替代方法：静态主机文件(例如/etc/hosts)，网络信息系统以及轻权目录访问协议（Lightweight Directory Access Protocol, LDAP）
-5. gethostbyname:
+5. gethostbyname: 根据名字获取IP地址
     ```c
     #include <netdb.h>
     struct hostent *gethostbyname (const char *hostname);
 
     // Returns: non-null pointer if OK,NULL on error with h_errno set
     ```
-    
+6. gethostbyaddr: 根据IP地址获取名字
+    ```c
+    #include <netdb.h>
+    struct hostent *gethostbyaddr (const char *addr, socklen_t len, int family);
+
+    // Returns: non-null pointer if OK, NULL on error with h_errno set
+    ```
+7. getservbyname: 根据名字获取服务
+    ```c
+    #include <netdb.h>
+    struct servent *getservbyname (const char *servname, const char *protoname);
+    // Returns: non-null pointer if OK, NULL on error
+
+    struct servent {
+        char *s_name; /* official service name */
+        char **s_aliases; /* alias list */
+        int s-port; /* port number, network-byte order */ char *s_proto; /* protocol to use */
+    };
+    ```
+8. gerservbyport: 根据给定端口号和可选协议查找相应服务
+    ```c
+    #include <netdb.h>
+    struct servent *getservbyport (int port, const char *protoname);
+    // Returns: non-null pointer if OK, NULL on error
+    ```
