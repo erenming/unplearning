@@ -30,5 +30,19 @@ int main(int argc, char **argv)
     for ( ; *pptr != NULL; pptr++) {
         sockfd = Socket(AF_INET, SOCK_STREAM, 0);
         bzero(&servaddr, sizeof(servaddr));
+        servaddr.sin_family = AF_INET;
+        servaddr.sin_port = sp->s_port;
+        memcpy(&servaddr.sin_addr, *pptr, sizeof(struct in_addr));
+        printf("tring %s\n", Sock_ntop((SA *) &servaddr, sizeof(servaddr)));
+        if (connect(sockfd, (SA *) &servaddr, sizeof(servaddr)) == 0)
+            break;                  // success
+        close(sockfd);
     }
+    if (*pptr == NULL)
+        err_quit("unable to connect");
+    while ( (n = Read(sockfd, recvline, MAXLINE)) > 0 ) {
+        recvline[n] = 0;
+        Fputs(recvline, stdout);
+    }
+    exit(0);
 }

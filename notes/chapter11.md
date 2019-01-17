@@ -42,3 +42,24 @@
     struct servent *getservbyport (int port, const char *protoname);
     // Returns: non-null pointer if OK, NULL on error
     ```
+9. getaddrinfo: 处理名字到地址以及服务到端口两种转换，返回的是一个sockaddr结构(sockaddr结构可由套接字函数直接使用)
+    ```c
+    #include <netdb.h>
+    int getaddrinfo (const char *hostname, const char *service, const struct addrinfo *hints, struct addrinfo **result);
+    // Returns: 0 if OK, nonzero on error
+
+    struct addrinfo {
+        int ai_flags;   /* AI_PASSIVE, AI_CANONNAME */
+        int ai_family;   /* AF_xxx */
+        int ai_socktype;   /* SOCK_xxx */
+        int ai_protocol;   /* 0 or IPPROTO_xxx for IPv4 and IPv6 */
+        socklen_t ai_addrlen;    /* length of ai_addr */
+        char *ai_canonname;    /* ptr to canonical name for host */
+        struct sockaddr *ai_addr;   /* ptr to socket address structure */
+        struct addrinfo *ai_next; /* ptr to next structure in linked list */
+    };
+    ```
+10. 可重入(Reentrancy): In computing, a computer program or subroutine is called reentrant if it can be interrupted     in the middle of its execution and then safely be called again ("re-entered") before its previous invocations      complete execution.
+11. 总结：
+    ![xx](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20190116-224623@2x.png)
+
