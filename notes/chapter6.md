@@ -66,6 +66,7 @@
             FD_SET(4, &rset); /* turn on bit for fd 4 */
             FD_SET(5, &rset); /* turn on bit for fd 5 */
             ```
+        - maxfdp1: 指定待测试的描述符个数，通常为待测的最大描述符+1
     2. 描述符就绪条件
         - A socket is ready for reading：
             1. The number of bytes of data in the socket receive buffer is greater than or equal to the current size of the low-water mark for the socket receive buffer.
