@@ -11,3 +11,8 @@
     - 既然使用select等待连接的建立，我们可以给select指定一个时间限制，使得我们能够缩短connect的超时时间(
         存在调用select之前有可能连接已经建立并有来自对端的数据到达
     )
+5. 非阻塞accept：
+    - 缺陷：存在建立连接后，服务端来不及处理accept，而此时收到了一个RST, 从而导致阻塞的问题
+    - 解决方案：
+        1. 当使用select获悉某个监听套接字上有已完成连接准备好被accept时，总是把监听套接字设置为非阻塞
+        2. 在后续的accept调用中忽略一下错误: EWOULDBLOCK, ECONNABORTED, EPROTO, EINTR
