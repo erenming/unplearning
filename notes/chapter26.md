@@ -40,3 +40,18 @@
     // Does not return to caller
     ```
     - status不能指向对于调用线程是局部的对象，因为线程终止时这样的对象同时也消失
+7. 现场特定数据
+    - 动机：A function that keeps state in a private buffer, or one that returns a result in the form of a pointer to a static buffer, is not thread-safe because multiple threads cannot use the buffer to hold different things at the same time
+    - 解决方案：
+        1. 使用线程特定数据（常用）
+        2. 改变调用顺序，那么调用者可将所有参数打包进一个结构中
+        3. 改变接口的结构，避免使用静态变量
+    - 每个系统支持有限数量的线程特定数据：
+    ![xx](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20190214-113629@2x.png)
+8. 互斥锁(mutex)：
+    - 动机：多个线程更改一个共享变量会导致错误
+    - 线程访问变量的前提是持有该互斥锁
+9. 条件变量：
+    - 动机：we need something else to let us go to sleep waiting for some condition to occur
+    - 解决方案：
+        1. 互斥锁结合条件变量：可以让主循环进入睡眠，直到某个线程通知它有事可做才醒来
