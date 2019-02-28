@@ -81,7 +81,10 @@
         - 接受和发送低水位标记的目的： give the application control over how much data must be available for reading or how much space must be available for writing before select returns a readable or writable status
         - 总结：
             ![1](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20181221-103415@2x.png)
-
+    3. 缺点
+        - 每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大
+        - 同时每次调用select都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大
+        - select支持的文件描述符数量太小了，默认是1024
 - shutdown: 在应用中，发送给对端一个FIN，告诉它我们已经完成了数据发送，但是仍然保持套接字描述符打开以便读取
     ```c
     #include <sys/socket.h>
