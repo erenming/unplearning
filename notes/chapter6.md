@@ -102,25 +102,21 @@
 - 拒绝服务型攻击：当一个服务器在处理多个客户时，绝对不能阻塞于只于单个客户相关的某个函数调用。否则可能导致服务器被挂起，
                 拒绝为所有其他客户提供服务。
 
-- poll函数：功能类似select
-    ```c
-    #include <poll.h>
-    int poll (struct pollfd *fdarray, unsigned long nfds, int timeout);
-    // Returns: count of ready descriptors, 0 on timeout, –1 on error
-    ```
-    1. 参数说明：
-        - fdarray: 指向一个结构数组第一个元素的指针
-            ```c
-            struct pollfd {
-                int fd; /* descriptor to check */
-                short events; /* events of interest on fd */
-                short revents; /* events that occurred on fd */
-            };
-            ```
-    2. 就TCP/UDP而言，触发poll返回特定的revent
-        - 所有正规TCP数据和所有UDP数据都被认为是普通数据
-        - TCP带外数据被认为是优先级数据
-        - TCP读半部关闭时，普通数据
-        - TCP连接存在错误认为普通数据或错误
-        - 监听套接字上有新的连接通常为普通数据
-        - 非阻塞式connect的完成被认为是使相应套接字可写
+- epoll:  解决了select的三个缺点
+    1. `int epoll_create1(int flags);`: 创建epoll实例
+        ![1](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20190301-092941@2x.png)
+        - flags
+            1. 0
+            2. EPOLL_CLOEXEC：any child process forked by the current process will close the epoll descriptor before it execs, so the child process won’t have access to the epoll instance anymore.
+    2. `int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);`: add file descriptors it wants monitored to the epoll instance
+        ![1](https://github.com/tomming233/unplearning/raw/master/notes/images/WX20190301-094103@2x.png)
+        - interest list: All the file descriptors registered with an epoll instance
+        - ready list: any of the file descriptors registered become ready for I/O
+        - epfd: the file descriptor returned by epoll_create which identifies the epoll instance in the kernel.
+        - fd: is the file descriptor we want to add to the epoll list/interest list.
+        - op: refers to the operation to be performed on the file descriptor fd. In general, three operations are supported:
+        - event: a pointer to a structure called epoll_event which stores the event we actually want to monitor fd for。例如EPOLLIN事件，代表socker buffer中有数据到达
+    3. `epoll_wait`: A thread can be notified of events that happened on the epoll set/interest set of an epoll instance by calling the epoll_wait system call, which blocks until any of the descriptors being monitored becomes ready for I/O.
+    4. 性能总结：The cost of epoll is O(number of events that have occurred) and not O(number of descriptors being monitored) as was the case with select/poll.
+    5. 水平触发(level-triggered): 例如只要有数据可以读(处于可读的状态)，不管怎样都会通知。select也是这种
+    6. 边缘触发(edge-triggered): 只有状态发生变化时才会通知。适用于高性能要求，例如`Nginx`就使用了边缘触发
