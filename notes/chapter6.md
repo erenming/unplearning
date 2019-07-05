@@ -117,6 +117,9 @@
         - op: refers to the operation to be performed on the file descriptor fd. In general, three operations are supported:
         - event: a pointer to a structure called epoll_event which stores the event we actually want to monitor fd for。例如EPOLLIN事件，代表socker buffer中有数据到达
     3. `epoll_wait`: A thread can be notified of events that happened on the epoll set/interest set of an epoll instance by calling the epoll_wait system call, which blocks until any of the descriptors being monitored becomes ready for I/O.
-    4. 性能总结：The cost of epoll is O(number of events that have occurred) and not O(number of descriptors being monitored) as was the case with select/poll.
-    5. 水平触发(level-triggered): 例如只要有数据可以读(处于可读的状态)，不管怎样都会通知。select也是这种
-    6. 边缘触发(edge-triggered): 只有状态发生变化时才会通知。适用于高性能要求，例如`Nginx`就使用了边缘触发
+    4. Why is faster than select/poll
+        - select/poll 是O(N), 当N很大时，耗时自然大
+        - epoll只关心`ready list`，当I/O事件准备好时，内核只需将`ready list`里的返回给用户进程
+    5. 性能总结：The cost of epoll is O(number of events that have occurred) and not O(number of descriptors being monitored) as was the case with select/poll.
+    6. 水平触发(level-triggered): 例如只要有数据可以读(处于可读的状态)，不管怎样都会通知。select也是这种
+    7. 边缘触发(edge-triggered): 只有状态发生变化时才会通知。适用于高性能要求，例如`Nginx`就使用了边缘触发
